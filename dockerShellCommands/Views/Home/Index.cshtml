@@ -1,0 +1,110 @@
+﻿@model dockerShellCommands.Models.ShellModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section Styles
+    {
+    <style>
+        .terminal {
+            background: black;
+            color: white;
+            font: courier;
+            padding: 10px;
+            height: 380px;
+            overflow: auto;
+        }
+
+        .line {
+            display: table;
+            width: 100%;
+        }
+
+        .terminal span {
+            display: table-cell;
+            width: 1px;
+        }
+
+        .terminal input {
+            display: table-cell;
+            width: 100%;
+            border: none;
+            background: black;
+            color: white;
+            outline: none;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $('.terminal').on('click', function () {
+                $('#input').focus();
+            });
+
+            $('#input').on('keydown', function search(e) {
+                if (e.keyCode == 13) {
+                    // append your output to the history,
+                    // here I just append the input
+                    $('#history').append($(this).val() + '<br/>');
+
+                    // you can change the path if you want
+                    // crappy implementation here, but you get the idea
+                    if ($(this).val().substring(0, 3) === 'cd ') {
+                        $('#path').html($(this).val().substring(3) + '&nbsp;>&nbsp;');
+                    }
+
+                    // clear the input
+                    $('#input').val('');
+
+                }
+            });
+        });
+    </script>
+}
+
+<form asp-action="Index">
+    <div class="row">
+        <label>Command</label>
+        <input asp-for="cmd" class="form-control" />
+    </div>
+    <div class="row" style="display : none;">
+        <label>Type</label>
+        <select asp-for="UseShellExecute">
+            <option id="1" value="1">1</option>
+            <option id="0" value="0" selected>0</option>
+        </select>
+    </div>
+    <div class="row">
+        <label>WorkingDirectory</label>
+        <input asp-for="WorkingDirectory" class="form-control" />
+    </div>
+    <div class="row">
+        <button class="btn btn-primary" type="submit">Run</button>
+    </div>
+
+    <div class="row" style="max-height : 400px; " >
+        <div class="card " style="width: 800px;">
+            <div class="card-body">
+                <div class="terminal">
+                    <div id="history">
+                        @Html.Raw(ViewBag.Data)
+                    </div>
+                    @*<div class="line">
+                        <span id="path">λ &nbsp;&nbsp;</span>
+                        <input type="text" class="form-control" id="input"  value="">
+                        </line>
+                    </div>*@
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+</form>
+<div class="text-center">
+    @*<p>@Html.Raw(ViewBag.Data)</p>*@
+</div>
